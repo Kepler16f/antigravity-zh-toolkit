@@ -1,0 +1,8 @@
+# runtime state produced by the guard scripts
+scripts/state.json
+scripts/tool-path.txt
+scripts/watcher.lock
+scripts/guard.log
+scripts/localize.out.txt
+scripts/localize.err.txt
+*.bak-install
