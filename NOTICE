@@ -1,0 +1,42 @@
+本项目（Antigravity 中文增强工具箱）与上游汉化工具的关系说明
+========================================================
+
+一、本项目不是上游项目的 fork
+----------------------------
+上游项目：QingniaoDawn/Antigravity-YiJianHanHua
+         https://github.com/QingniaoDawn/Antigravity-YiJianHanHua
+         （Antigravity 一键汉化 · 版权与授权声明，Copyright (c) 2026 青鸟）
+
+本仓库是一个**独立的配套增强项目**，向其 GitHub 发起 fork 的方式未采用。
+原因：上游采用自定义授权声明，其中要求「在完整保留本声明、作者署名及
+本仓库地址的前提下」分享，并禁止「去除、涂改本声明或作者署名，或将本工具
+（整体或部分）冒充为本人原创发布」。以 fork 形式再发布并改写 README/词典，
+与该声明的约束存在冲突。
+
+二、本仓库包含什么 / 不包含什么
+------------------------------
+包含（本项目自有，MIT 许可）：
+  - patches/zh_data.extra.json   增量词条（exact / prefix / regex）
+  - scripts/*.ps1, scripts/merge_dict.py   守护 / 守望者 / 安装 / 卸载脚本
+  - README.md, docs/MECHANISM.md, LICENSE, NOTICE
+
+不包含（不重新分发）：
+  - localize.py
+  - engine.js
+  - zh_data.json（含上游 19k+ 词条与另外 4 个社区词库的合并结果）
+  - 一键汉化.bat 及上游其它文件
+
+三、使用关系
+-----------
+用户需自行安装上游汉化工具；本项目只做三件事：
+  1) 把增量词条**合并**进用户本地 zh_data.json（用 merge_dict.py，幂等）
+  2) 部署「更新后自动重新汉化」的守护与守望者脚本
+  3) 提供机制文档与自助补词条的方法
+
+上游的版权、署名与仓库地址在此完整保留。
+若上游作者认为本项目构成侵权或需调整，请提 issue 或联系作者，将立即下架相关内容。
+
+四、商标
+--------
+Antigravity 是 Google 的产品。本项目与 Google 无关，
+与上游作者无隶属关系，仅为其工具的补充增强。

@@ -22,8 +22,13 @@ SOFTWARE.
 
 ---
 
+Scope of this license
+---------------------
+This license covers ONLY the material originally written for this repository:
+the incremental dictionary entries, the guard/watcher/installer scripts and
+the documentation.
+
 The upstream Antigravity localization engine and dictionary are the work of
 their respective authors (https://github.com/QingniaoDawn/Antigravity-YiJianHanHua
-and the community dictionaries it merges). This repository ships only the
-additional entries and automation scripts; no upstream dictionary is
-redistributed here.
+and the community dictionaries it merges), are licensed by them under their own
+terms, and are NOT redistributed here. See NOTICE for details.
