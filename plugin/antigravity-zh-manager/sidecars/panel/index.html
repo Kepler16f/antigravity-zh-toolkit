@@ -63,6 +63,17 @@ input{border:1px solid var(--line);border-radius:7px;background:var(--bg);color:
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S=null,applying=false;
+// 二次确认：不能用 confirm()。
+// 在 Antigravity 的 plugin:// iframe 里 window.confirm() 被宿主禁用，**直接返回 false**
+// （实测 2026-11-13），于是 `if(!confirm(...))return;` 会静默退出 —— 表现为
+// "点了按钮完全没反应"。改成面板内自绘的两段式确认。
+let arm=null; // {mode, timer}
+function armConfirm(mode){
+  if(arm && arm.mode===mode){ clearTimeout(arm.timer); arm=null; return true; }
+  arm={mode, timer:setTimeout(()=>{ arm=null; const n=$('#note'); if(n) n.textContent=''; render(); }, 4000)};
+  render();
+  return false;
+}
 async function api(p,b){const r=await fetch(p,{method:b?'POST':'GET',headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(!r.ok||j.error)throw new Error(j.error||('HTTP '+r.status));return j}
 function render(){
   if(!S)return;
@@ -80,19 +91,25 @@ function render(){
     ? ('汉化工具 <b>'+esc(t.version||'未知版本')+'</b> · 词典 <b>'+esc(t.dictVersion||'?')+'</b> · '+esc(String(t.entries||0))+' 条词条')
     : '未找到汉化工具目录';
   const busy = applying || (S.lastApply && Date.now()-S.lastApply.at<90000);
-  $('#btnApply').disabled = !!busy;
-  $('#btnApply').textContent = busy ? '汉化执行中…' : '立即汉化并重启';
+  const armedApply = arm && arm.mode==='apply';
+  const armedRestore = arm && arm.mode==='restore';
+  $('#btnApply').disabled = !!busy || armedRestore;
+  $('#btnApply').textContent = busy ? '汉化执行中…' : (armedApply ? '⚠ 再点一次执行（会关闭 IDE）' : '立即汉化并重启');
+  $('#btnRestore').disabled = !!busy || armedApply;
+  $('#btnRestore').textContent = armedRestore ? '⚠ 再点一次执行（会关闭 IDE）' : '恢复英文原版';
+  if(armedApply) $('#note').innerHTML='<span class="warn">再点一次「立即汉化并重启」确认执行（4 秒内有效）。Antigravity 会被关闭，约 40 秒后自动重启。</span>';
+  else if(armedRestore) $('#note').innerHTML='<span class="warn">再点一次「恢复英文原版」确认执行（4 秒内有效）。</span>';
 }
 async function refresh(){try{S=await api('/api/status');render()}catch(e){$('#info').textContent='状态获取失败：'+e.message}}
 $('#btnApply').onclick=async()=>{
-  if(!confirm('将关闭 Antigravity 并重新汉化（约 40 秒后自动重启）。\\n未保存的工作会丢失，继续？'))return;
+  if(!armConfirm('apply'))return;
   applying=true;$('#note').textContent='正在派发汉化任务…';render();
   try{const r=await api('/api/apply',{mode:'apply'});$('#note').textContent=r.note||'已派发';}
   catch(e){applying=false;$('#note').innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
 };
 $('#btnRestore').onclick=async()=>{
-  if(!confirm('将恢复官方英文原版并重启 Antigravity。继续？'))return;
-  applying=true;$('#note').textContent='正在派发恢复任务…';
+  if(!armConfirm('restore'))return;
+  applying=true;$('#note').textContent='正在派发恢复任务…';render();
   try{const r=await api('/api/apply',{mode:'restore'});$('#note').textContent=r.note||'已派发';}
   catch(e){applying=false;$('#note').innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
 };

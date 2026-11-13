@@ -1,6 +1,6 @@
 {
-  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-13 更新：补 Antigravity 2.31.2 上游 v1.13 仍未覆盖的界面文案。",
-  "version": "1.1.0",
+  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-13 更新：补 Antigravity 2.31.2 上游 v1.13 仍未覆盖的界面文案；新增思考档位 Extra(xhigh)/Max。",
+  "version": "1.2.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -166,7 +166,13 @@
     "e.g. main,dev or *": "例如：main、dev 或 *",
     "e.g., chromium/src": "例如：chromium/src",
     "e.g., example.com": "例如：example.com",
-    "e.g., main or refs/heads/main": "例如：main 或 refs/heads/main"
+    "e.g., main or refs/heads/main": "例如：main 或 refs/heads/main",
+    "Extra": "超高",
+    "Max": "最大",
+    "Extra Thinking": "超高思考",
+    "Max Thinking": "最大思考",
+    "(xhigh)": "(超高)",
+    "(max)": "(最大)"
   },
   "prefix": {
     "Select project, current: ": "选择项目，当前：",
