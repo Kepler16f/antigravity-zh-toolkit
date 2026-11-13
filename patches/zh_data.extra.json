@@ -1,6 +1,6 @@
 {
   "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-13 更新：补 Antigravity 2.31.2 上游 v1.13 仍未覆盖的界面文案；新增思考档位 Extra(xhigh)/Max。",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -215,6 +215,8 @@
     { "pattern": "^(\\d+)\\s*d ago$", "replacement": "$1 天前" },
     { "pattern": "^(\\d+)\\s*w ago$", "replacement": "$1 周前" },
     { "pattern": "^(\\d+)\\s*s ago$", "replacement": "$1 秒前" },
-    { "pattern": "·\\s*Exited with code (\\d+)", "replacement": "· 退出码 $1" }
+    { "pattern": "·\\s*Exited with code (\\d+)", "replacement": "· 退出码 $1" },
+    { "pattern": "^(.+?)\\s*\\(xhigh\\)$", "replacement": "$1 (超高)" },
+    { "pattern": "^(.+?)\\s*\\(max\\)$", "replacement": "$1 (最大)" }
   ]
 }
