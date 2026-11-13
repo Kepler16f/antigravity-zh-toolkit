@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<style>
+:root{color-scheme:light dark;--bg:#f7f7f8;--card:#fff;--tx:#1c1c1e;--dim:#6b6b70;--line:#e2e2e6;--ok:#1a9e5c;--bad:#d64541;--warn:#c98a00;--acc:#3b6ef6}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a1d;--card:#232327;--tx:#ececee;--dim:#9a9aa0;--line:#333338;--acc:#5b86ff}}
+body{font:13px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);margin:0;padding:14px}
+h1{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+h2{font-size:13.5px;margin:0 0 8px}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);white-space:nowrap}
+.badge.ok{color:var(--ok);border-color:var(--ok)}
+.badge.bad{color:var(--bad);border-color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.dim{color:var(--dim);font-size:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+button{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:7px;padding:5px 11px;font-size:12.5px;cursor:pointer}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+input{border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--tx);padding:5px 8px;font-size:12.5px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.banner{border-radius:8px;padding:8px 10px;font-size:12.5px;margin-bottom:10px;display:none}
+.banner.bad{display:block;background:rgba(214,69,65,.12);border:1px solid var(--bad)}
+.banner.ok{display:block;background:rgba(26,158,92,.10);border:1px solid var(--ok)}
+</style>
+</head>
+<body>
+<h1>一键汉化 <span id="badge" class="badge">检测中…</span></h1>
+
+<div id="banner" class="banner"></div>
+
+<div class="card">
+  <h2>当前状态</h2>
+  <div id="info" class="dim">检测中…</div>
+  <div id="toolInfo" class="dim" style="margin-top:3px">检测中…</div>
+  <div class="row">
+    <button id="btnApply" class="pri">立即汉化并重启</button>
+    <button id="btnRestore">恢复英文原版</button>
+  </div>
+  <div id="note" class="dim" style="margin-top:6px"></div>
+</div>
+
+<div class="card">
+  <h2>汉化工具目录</h2>
+  <div class="row">
+    <input id="toolDir" style="flex:1;min-width:200px" placeholder="包含 localize.py 的目录" />
+    <button id="btnSave">保存</button>
+    <button id="btnDetect">自动查找</button>
+  </div>
+  <div class="dim" id="toolHint" style="margin-top:5px">即上游「Antigravity 一键汉化」工具的目录（内含 localize.py）。</div>
+</div>
+
+<div class="card">
+  <h2>说明</h2>
+  <div class="dim">
+    · 汉化 / 恢复会<b>关闭 Antigravity</b>，完成后<b>自动重启</b>（约 40 秒）。请先保存正在编辑的内容。<br>
+    · 官方更新会把界面换回英文 —— 这里一键即可恢复，也可以直接关掉 IDE 等几十秒，后台守护会自动补。<br>
+    · 界面里的项目名、模型名、代码块里的命令保持英文属正常（引擎按设计跳过）。
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S=null,applying=false;
+async function api(p,b){const r=await fetch(p,{method:b?'POST':'GET',headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(!r.ok||j.error)throw new Error(j.error||('HTTP '+r.status));return j}
+function render(){
+  if(!S)return;
+  const b=$('#badge');
+  if(S.localized===true){b.className='badge ok';b.textContent='已汉化';$('#banner').className='banner ok';$('#banner').style.display='block';$('#banner').textContent='当前是汉化版。官方更新后会自动变回英文 —— 到时点下方按钮即可恢复。';}
+  else if(S.localized===false){b.className='badge bad';b.textContent='官方英文版';
+    $('#banner').className='banner bad';$('#banner').style.display='block';
+    $('#banner').innerHTML = S.ideRunning ? '检测到汉化已失效（官方更新覆盖了 app.asar）。点下方「立即汉化并重启」：会关闭 Antigravity，约 40 秒后自动重启为中文。' : 'Antigravity 未在运行。点击按钮后将自动汉化并启动。';}
+  else {b.className='badge';b.textContent='检测中…';$('#banner').style.display='none';}
+  $('#info').innerHTML = 'IDE 版本 <b>'+esc(S.ideVersion||'?')+'</b> · app.asar '+
+    (S.asar?Math.round(S.asar.size/1048576*10)/10+'MB':'—')+
+    ' · IDE '+(S.ideRunning?'<span class="ok">运行中</span>':'未运行');
+  const t=S.tool||{};
+  $('#toolInfo').innerHTML = t.dir
+    ? ('汉化工具 <b>'+esc(t.version||'未知版本')+'</b> · 词典 <b>'+esc(t.dictVersion||'?')+'</b> · '+esc(String(t.entries||0))+' 条词条')
+    : '未找到汉化工具目录';
+  const busy = applying || (S.lastApply && Date.now()-S.lastApply.at<90000);
+  $('#btnApply').disabled = !!busy;
+  $('#btnApply').textContent = busy ? '汉化执行中…' : '立即汉化并重启';
+}
+async function refresh(){try{S=await api('/api/status');render()}catch(e){$('#info').textContent='状态获取失败：'+e.message}}
+$('#btnApply').onclick=async()=>{
+  if(!confirm('将关闭 Antigravity 并重新汉化（约 40 秒后自动重启）。\\n未保存的工作会丢失，继续？'))return;
+  applying=true;$('#note').textContent='正在派发汉化任务…';render();
+  try{const r=await api('/api/apply',{mode:'apply'});$('#note').textContent=r.note||'已派发';}
+  catch(e){applying=false;$('#note').innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
+};
+$('#btnRestore').onclick=async()=>{
+  if(!confirm('将恢复官方英文原版并重启 Antigravity。继续？'))return;
+  applying=true;$('#note').textContent='正在派发恢复任务…';
+  try{const r=await api('/api/apply',{mode:'restore'});$('#note').textContent=r.note||'已派发';}
+  catch(e){applying=false;$('#note').innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
+};
+$('#btnSave').onclick=async()=>{
+  const r=await api('/api/settings',{toolDir:$('#toolDir').value});
+  $('#toolHint').textContent = r.ok ? '已保存 ✓' : '保存失败';
+  refresh();
+};
+$('#btnDetect').onclick=async()=>{
+  $('#toolHint').textContent='查找中…';
+  const s=await api('/api/status');
+  $('#toolDir').value=s.toolDir||'';
+  $('#toolHint').textContent=s.toolDir?('找到：'+s.toolDir):'未找到，请手动填写';
+};
+refresh();setInterval(refresh,5000);
+</script>
+</body>
+</html>

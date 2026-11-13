@@ -106,6 +106,49 @@ Antigravity.exe (Electron 主进程)
 | 句首固定、后面跟动态内容 | `prefix`（**长度 ≥16**） |
 | 单个常见词 | `core` 或 `exact` |
 
+### 批量比对：一次找出所有界面的漏译
+
+点遍每个界面找漏译太慢。界面文案全在**语言服务器的单文件 `main.js`** 里
+（IDE 窗口地址栏就是语言服务器的地址）：
+
+```bash
+curl -sk https://127.0.0.1:<语言服务器端口>/main.js -o main.js
+```
+
+然后照抄 `engine.js` 的 `pipeline()` 逻辑，把抽出来的字符串过一遍词典，
+命中即「有翻译」，没命中即「词典缺」。
+
+抽取时的取舍（实测 2.31.2，11.8MB 的 main.js）：
+
+| 做法 | 产出 | 噪音 |
+|---|---|---|
+| 抽 `ariaLabel` / `title` / `placeholder` / `label` / `description` / `tooltip` | ~1000 条 | 低，基本都是真 UI 文案 |
+| 抽**所有**字符串字面量 | 42000 条 | 极高（Graphviz 算法名、Unicode 区块名、Katex 报错、代码碎片），过滤后仍剩 3000+ 条半截字符串 |
+
+判断"该不该翻"的硬标准：
+
+- **模型名 / 产品名 / 函数签名不翻**：`Flash Lite`、`Gemini Flash Next`、
+  `Google Chat`、`has_path_prefix(modified_files, ...)`。
+- **`aria-label` 显示英文是正常的**：引擎故意不翻它（Antigravity 拿
+  `aria-label` 当稳定标识做逻辑判断，如 `onBlur` 里比对 `==="Cancel"`），
+  翻了会误触发行为。见上面 `ATTRS` 那行注释。
+
+### 词典到底是谁的锅
+
+排查顺序很重要，**先查上游再查自己**：
+
+1. 上游每次适配新版 Antigravity 会带进大批新词条
+   （v1.10.1 → v1.13：`exact` 19690 → 20164，**多了 629 条**，
+   其中 87 条正好是本仓库补过的那些界面文案）；
+2. 上游**不会自动替换自己的文件**（它明说"下载后由你决定怎么换"），
+   所以词典落后是常态；
+3. 因此"界面冒出英文"时，先 `python localize.py update` 看上游有没有新版，
+   再谈补词条。
+
+合并脚本 `merge_dict.py` 是**幂等**的：上游已经收录的条目不会被本仓库的
+版本覆盖（上游优先），上游没有的才补进去 —— 所以升级上游后本仓库的词条
+依然生效。
+
 ## 六、坑
 
 1. **PowerShell 5.1 按 ANSI 读 `.ps1`**（没有 BOM 时）→ 脚本里出现中文会报
@@ -114,3 +157,15 @@ Antigravity.exe (Electron 主进程)
    所以可以安全地接在启动器前面——启动仍由你的启动器负责，能带上代理参数。
 3. **词典会被上游工具更新覆盖** → 增量词条单独存一份（本仓库的
    `patches/zh_data.extra.json`），更新后重新合并即可。
+4. **Node 里读 `where` 的输出要按 GBK 解码**：`where` 走控制台代码页
+   （zh-CN 上是 936），按 UTF-8 解码会把中文用户名打成 `C:\Users\������\`。
+   写进 `.vbs` 后路径直接失效 → 插件的"一键汉化"按钮点了没反应。
+   修法：优先用文件系统探测（`readdirSync` 拼路径，不经过文本解码），
+   实在要读 `where` 就用 `new TextDecoder('gbk')`（ASCII 路径在两种编码下等价，安全）。
+5. **sidecar 里读不到真实的 `app.asar`**：宿主把 `fs` 钩成了虚拟 asar 文件系统，
+   `statSync` 返回 size 0、`readFileSync` 报 `ENOENT, not found in ...`。
+   绕道 **PowerShell 子进程**读真实文件（它看到的是真实文件系统）。
+6. **插件里执行"关 IDE → 汉化 → 重启 IDE"不能直接 spawn**：
+   sidecar 派生的进程都在 IDE 的 Job Object 里，IDE 一杀它们全灭。
+   做法是写一个 `.vbs`（UTF-16LE + BOM，路径含中文），
+   再用 `explorer.exe <vbs>` 派发 —— explorer 启动的进程不在那个 Job 里。

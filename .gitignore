@@ -6,3 +6,7 @@ scripts/guard.log
 scripts/localize.out.txt
 scripts/localize.err.txt
 *.bak-install
+
+# runtime state produced by the sidecar panel plugin
+plugin/antigravity-zh-manager/sidecars/panel/settings.json
+plugin/antigravity-zh-manager/sidecars/panel/apply.vbs

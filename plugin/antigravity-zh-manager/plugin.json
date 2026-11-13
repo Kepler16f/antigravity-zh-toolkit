@@ -1,0 +1,7 @@
+{
+  "name": "antigravity-zh-manager",
+  "display_name": "一键汉化",
+  "description": "检测汉化状态、一键重新汉化/恢复英文原版。官方更新覆盖汉化后，在面板里一键即可恢复（会关闭 Antigravity 并自动重启）。",
+  "version": "0.1.0",
+  "logo": "assets/logo.svg"
+}

@@ -1,6 +1,6 @@
 {
-  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。",
-  "version": "1.0.0",
+  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-13 更新：补 Antigravity 2.31.2 上游 v1.13 仍未覆盖的界面文案。",
+  "version": "1.1.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -153,7 +153,20 @@
     "See more in Developer Tools": "在「开发者工具」中查看更多",
     "See more in Business": "在「商业」中查看更多",
     "Search, read, draft, and send emails in Gmail.": "在 Gmail 中搜索、阅读、起草和发送邮件。",
-    "Connect to your managed Looker MCP server to explore data, run saved Looks, build dashboards, and validate LookML.": "连接到你的托管 Looker MCP 服务器，以浏览数据、运行已保存的 Look、构建仪表板并校验 LookML。"
+    "Connect to your managed Looker MCP server to explore data, run saved Looks, build dashboards, and validate LookML.": "连接到你的托管 Looker MCP 服务器，以浏览数据、运行已保存的 Look、构建仪表板并校验 LookML。",
+    "How often": "频率",
+    "Toggle Word Wrap (Alt+Z)": "切换自动换行 (Alt+Z)",
+    "Render display math flush left.": "行间公式左对齐显示。",
+    "Render display math in leqno style (left-justified tags).": "以 leqno 样式渲染行间公式（标签左对齐）。",
+    "Trust the input, enabling all HTML features such as \\url.": "信任输入，启用所有 HTML 功能（如 \\url）。",
+    "e.g. Release helper": "例如：Release helper",
+    "e.g. ci.yml,deploy.yml or *": "例如：ci.yml、deploy.yml 或 *",
+    "e.g. google or *": "例如：google 或 *",
+    "e.g. jetski or *": "例如：jetski 或 *",
+    "e.g. main,dev or *": "例如：main、dev 或 *",
+    "e.g., chromium/src": "例如：chromium/src",
+    "e.g., example.com": "例如：example.com",
+    "e.g., main or refs/heads/main": "例如：main 或 refs/heads/main"
   },
   "prefix": {
     "Select project, current: ": "选择项目，当前：",

@@ -21,9 +21,10 @@ Antigravity IDE（Google 的 Agentic IDE）自带的汉化方案是**运行时 D
 
 | 交付 | 说明 |
 |---|---|
-| **增量词条** | 152 条整句 / 5 条前缀 / 34 条正则，覆盖 2.30.0 新增界面、代理动作气泡、快捷键页模板、插件市场动作、无障碍标签等 |
+| **增量词条** | 165 条整句 / 5 条前缀 / 34 条正则，覆盖 2.30.0–2.31.2 新增界面、代理动作气泡、快捷键页模板、插件市场动作、无障碍标签等 |
 | **更新后自动恢复** | 守护脚本比对 `app.asar` 的哈希，官方更新后自动重新汉化；**IDE 正开着时不会杀它**，而是等它关掉的那几秒内补好 |
 | **一键安装** | 合并词条 + 部署守护 + 挂钩启动器（打开 IDE 前先补丁） |
+| **面板插件** | 「一键汉化」插件：在 Antigravity 侧边栏里看汉化状态、词典条数，一键重汉化 / 恢复英文原版（见 [插件形态](#插件形态一键汉化面板)） |
 | **机制文档** | 汉化到底怎么实现的、怎么自己补词条（见 [docs/MECHANISM.md](docs/MECHANISM.md)） |
 
 ---
@@ -84,6 +85,61 @@ powershell -ExecutionPolicy Bypass -File scripts\install.ps1 -ToolDir "<上游�
 cd <上游汉化工具目录>
 python localize.py apply --yes
 ```
+
+### 插件形态：一键汉化面板
+
+不想敲命令的话，可以把汉化做成 Antigravity 里的一个侧边栏面板（**插件形态**）：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install-plugin.ps1
+```
+
+它会：
+
+- 把 `plugin/antigravity-zh-manager` 复制到 `~/.gemini/config/plugins/antigravity-zh-manager`，
+  并在 `~/.gemini/config/config.json` 的 `plugins` 段里登记启用；
+- 重启 Antigravity 后，从插件菜单打开「一键汉化」，就能看到
+  **当前是否已汉化 / IDE 版本 / 汉化工具版本 / 词典条数**，
+  以及「立即汉化并重启」「恢复英文原版」两个按钮。
+
+面板的实现要点（踩过的坑都在这）：
+
+| 坑 | 说明 |
+|---|---|
+| **`app.asar` 读不到** | sidecar 里宿主把 `fs` 钩成了虚拟 asar 文件系统，`statSync` 返回 size 0、`readFileSync` 报 ENOENT → 状态检测必须绕道 **PowerShell 子进程**读真实文件 |
+| **状态检测靠标记串** | 引擎注入后 asar 里会有 `__AGY_ZH_ACTIVE__` 标记，扫到即「已汉化」。不用记哈希 → 跨版本跨更新都不会失灵 |
+| **`where` 输出是 GBK** | 控制台代码页解码问题：`where python` 的中文用户名按 UTF-8 读会变成 `C:\Users\������\` → 写进 `.vbs` 后路径失效，**一键汉化按钮点了没反应**。修法：优先用文件系统探测（pyenv / 官方安装版目录），实在要读 `where` 就按 GBK 解码 |
+| **IDE 一杀，脚本也得活** | `.vbs` 由 `explorer.exe` 派发（不在 IDE 的 Job Object 里），IDE 被杀时脚本继续跑完汉化再重启 IDE |
+
+卸载：`powershell -ExecutionPolicy Bypass -File scripts\install-plugin.ps1 -Uninstall`
+
+---
+
+## 上游词典升级（重要）
+
+**界面冒出新英文，多半不是本项目的词条漏了，而是上游词典落后了。**
+上游每次适配新版 Antigravity 都会带进一大批新词条（v1.11 → v1.13 光 `exact` 就多了 600 多条）。
+
+检查当前用的是哪一版：
+
+```powershell
+cd <上游汉化工具目录>
+python localize.py update      # 只查，不改
+```
+
+上游**不会自动替换自己的文件**（它明说「下载后由你决定怎么换」），所以升级是手动三步：
+
+```powershell
+# 1) 解压新版本覆盖到上游工具目录（先备份旧的）
+#    下载页：https://github.com/QingniaoDawn/Antigravity-YiJianHanHua/releases
+# 2) 重新合并本项目的增量词条（幂等）
+python scripts\merge_dict.py "<上游汉化工具目录>" patches\zh_data.extra.json
+# 3) 重新汉化
+cd "<上游汉化工具目录>" && python localize.py apply --yes
+```
+
+> 合并是**幂等**的：上游已经收录的条目不会被我们的版本覆盖（上游优先），
+> 上游没有的才会补进去 —— 所以升级上游后本项目的词条依然生效。
 
 ---
 
@@ -156,8 +212,14 @@ antigravity-zh-toolkit/
 │   └── MECHANISM.md           汉化机制详解 + 补词条方法
 ├── patches/
 │   └── zh_data.extra.json     增量词条（exact / prefix / regex）
+├── plugin/
+│   └── antigravity-zh-manager/    「一键汉化」侧边栏面板插件
+│       ├── plugin.json
+│       ├── assets/logo.svg
+│       └── sidecars/panel/{main.mjs,index.html,sidecar.json}
 └── scripts/
     ├── install.ps1            一键安装
+    ├── install-plugin.ps1     安装/卸载面板插件
     ├── merge_dict.py          词条合并（幂等，大小写敏感）
     ├── ag-han-huajin-guard.ps1    守护：检测到更新就重汉化
     ├── ag-han-huajin-watcher.ps1  退出守望者：IDE 关掉后秒级补好
@@ -167,6 +229,10 @@ antigravity-zh-toolkit/
 ---
 
 ## 想自己补词条
+
+> ⚠️ **先做第 0 步** —— 界面冒英文时，**八成是上游词典落后了，不是本项目漏了**。
+> 先看上游有没有适配新版：<https://github.com/QingniaoDawn/Antigravity-YiJianHanHua/releases>
+> （升级步骤见 [上游词典升级](#上游词典升级重要)）。确实缺了再往下走。
 
 发现界面还有英文时：
 
@@ -192,6 +258,30 @@ antigravity-zh-toolkit/
 
 详细步骤和踩坑见 [docs/MECHANISM.md](docs/MECHANISM.md)。
 
+### 批量排查：不用点遍每个界面
+
+逐个界面点着找效率很低。界面文案其实全在**语言服务器的单文件 `main.js`** 里，
+直接把它拉下来跟词典比对，能一次性找出**所有界面**（包括你还没点开过的）的漏译：
+
+```bash
+# 1) 语言服务器在 IDE 窗口的地址栏里（https://127.0.0.1:<端口>/）
+curl -sk https://127.0.0.1:<端口>/main.js -o main.js
+
+# 2) 从里面抽出 UI 字符串，按 engine.js 的匹配顺序过一遍词典
+#    （照抄 engine.js 的 pipeline() 逻辑，命中即「有翻译」）
+```
+
+实测经验（2.31.2）：
+
+- 按 `ariaLabel` / `title` / `placeholder` / `label` / `description` / `tooltip` 抽，
+  噪音比「抽所有字符串字面量」低一个量级 —— 后者 3000+ 条里九成是
+  Graphviz 算法名、Unicode 区块名、Katex 报错信息、代码碎片；
+- **模型名 / 产品名 / 函数签名不要翻**（`Flash Lite`、`Gemini Flash Next`、
+  `Google Chat`、`has_path_prefix(modified_files, ...)`）——
+  翻了反而怪；
+- `aria-label` **引擎故意不翻**（Antigravity 拿它当稳定标识做逻辑判断，
+  翻了在 `onBlur` 这类地方会误判），所以它显示英文是正常的。
+
 ---
 
 ## 常见问题
@@ -202,6 +292,15 @@ IDE 开着时不会立刻恢复 —— 关掉它，守望者会在几秒内补�
 
 **Q：安装脚本提示找不到上游汉化工具？**
 A：手动指定 `-ToolDir "<工具目录>"`。
+
+**Q：界面还是英文，但汉化状态显示「已汉化」？**
+A：说明引擎在跑、只是**词典里没有这条文案**。先查上游有没有更新词典
+（见 [上游词典升级](#上游词典升级重要)），再按
+[想自己补词条](#想自己补词条) 的方法补。
+
+**Q：面板里点「立即汉化并重启」没反应？**
+A：多半是**汉化工具目录**没设对（面板第二张卡里填），或者 python 没找到。
+面板会显示当前用的工具版本和词典条数，对着工具目录确认一下。
 
 **Q：PowerShell 报「字符串缺少终止符」之类的语法错误？**
 A：Windows PowerShell 5.1 按 ANSI（GBK）读取 `.ps1`（没有 BOM 时），
