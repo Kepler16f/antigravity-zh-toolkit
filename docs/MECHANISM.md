@@ -169,3 +169,18 @@ curl -sk https://127.0.0.1:<语言服务器端口>/main.js -o main.js
    sidecar 派生的进程都在 IDE 的 Job Object 里，IDE 一杀它们全灭。
    做法是写一个 `.vbs`（UTF-16LE + BOM，路径含中文），
    再用 `explorer.exe <vbs>` 派发 —— explorer 启动的进程不在那个 Job 里。
+7. **用户命名的内容也会被词典吃掉**：上游词典有 `Debug → 调试`，而
+   `pipeline()` 的第 3 步是**大小写不敏感精确匹配** —— 用户把会话命名为
+   `debug`，顶部面包屑和侧边栏都会显示成「调试」。这是用户内容，绝不能翻。
+   上游 `engine.js` 的 `judgeElement()` 原本只跳过消息体/代码块/输入框，
+   没跳过会话名容器。`scripts/patch_engine.py` 给它加了一个幂等补丁
+   （标记 `USER-CONTENT-GUARD`），让 `data-testid` 为
+   `breadcrumb-segment` / `conversation-row-sidebar` / `project-header`
+   的元素及其祖先链上的文本整块跳过。
+   **关键：上游每次升级都会整体替换 `engine.js`**，补丁会丢 ——
+   所以这个补丁挂在 `install.ps1` 和 `ag-han-huajin-guard.ps1` 里，
+   每次安装 / 自动重汉化都重新打。手动升级上游工具后也要手动跑一次。
+8. **`plugin://` iframe 里 `window.confirm()` 被禁用**：直接返回 `false`，
+   于是 `if(!confirm(...))return;` 静默退出（按钮点了毫无反应，连提示都没有）。
+   面板里改用自绘的两段式确认。另外 `Page.reload` 对 `plugin://` 无效，
+   要 `Page.navigate` 到自身 URL 才能刷新（刷新后 CDP target 会变，需重新取）。

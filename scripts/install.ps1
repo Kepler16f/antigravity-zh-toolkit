@@ -57,6 +57,12 @@ if (-not $python) { Say 'python not found (required by the localization tool any
 & $python (Join-Path $here 'merge_dict.py') $ToolDir $patchFile
 if ($LASTEXITCODE -ne 0) { Say 'dictionary merge failed'; exit 1 }
 
+# Keep user-named content (conversation / project names) out of the translator.
+# An upstream upgrade replaces engine.js, so this must run on every install.
+# Non-fatal: localization still works without it, just with the user-content bug.
+& $python (Join-Path $here 'patch_engine.py') $ToolDir
+if ($LASTEXITCODE -ne 0) { Say 'WARNING: engine patch skipped (upstream engine.js layout changed?)' }
+
 Set-Content -Path $toolDirFile -Value $ToolDir -Encoding UTF8
 
 # ---------- 3) scheduled task ----------

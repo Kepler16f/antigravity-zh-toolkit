@@ -189,13 +189,27 @@ Antigravity.exe (Electron 主进程)
 6. core 核心词分词
 ```
 
-**引擎故意不翻**的地方：代码块与编辑器、用户消息体、思考链、输入框、斜杠命令菜单。所以下面这些英文是设计如此：
+**引擎故意不翻**的地方：代码块与编辑器、用户消息体、思考链、输入框、斜杠命令菜单，以及**用户自己命名的项目名 / 会话名**。所以下面这些英文是设计如此：
 
 ```
-项目名 / 会话名        ZcodeX、Helechron、数学答疑
+项目名 / 会话名        ZcodeX、Helechron、dev、debug、数学答疑
 模型名                 Gemini 3.8 Flash
 代码块里的命令和工作流   flutter analyze、Check code issues、Build Helechron (Android & iOS)
 ```
+
+> ⚠️ **用户内容保护是补丁，不是上游自带**（2026-11-13 修）：上游词典有
+> `Debug → 调试`，而匹配大小写不敏感 —— 名为 `debug` 的会话会被翻成「调试」，
+> 顶部面包屑和侧边栏都会变。本项目用 `scripts/patch_engine.py` 给上游
+> `engine.js` 打一个幂等补丁（`USER-CONTENT-GUARD`），让
+> `breadcrumb-segment` / `conversation-row-sidebar` / `project-header`
+> 这三个容器里的文本**整块跳过**。
+>
+> **上游工具一升级就会覆盖 `engine.js`**，所以补丁挂在 `install.ps1` 和守护脚本里，
+> 每次安装 / 自动重汉化都会重新打。如果你手动升级了上游工具，记得跑一次：
+>
+> ```powershell
+> python scripts\patch_engine.py "<上游汉化工具目录>"
+> ```
 
 细节（词典字段表、跳过规则清单、更新失效的原理）见 **[docs/MECHANISM.md](docs/MECHANISM.md)**。
 
@@ -221,6 +235,7 @@ antigravity-zh-toolkit/
     ├── install.ps1            一键安装
     ├── install-plugin.ps1     安装/卸载面板插件
     ├── merge_dict.py          词条合并（幂等，大小写敏感）
+    ├── patch_engine.py        幂等补丁：用户命名的会话/项目名不翻
     ├── ag-han-huajin-guard.ps1    守护：检测到更新就重汉化
     ├── ag-han-huajin-watcher.ps1  退出守望者：IDE 关掉后秒级补好
     └── uninstall.ps1          卸载

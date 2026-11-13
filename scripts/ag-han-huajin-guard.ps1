@@ -63,6 +63,14 @@ if (Get-Process Antigravity -ErrorAction SilentlyContinue) {
   exit 0
 }
 
+# User-content guard: conversation / project names must never be translated.
+# An upstream tool upgrade replaces engine.js, so re-apply the guard every time.
+$patchEng = Join-Path $here 'patch_engine.py'
+if (Test-Path $patchEng) {
+  & $python $patchEng $toolDir | Out-Null
+  if ($LASTEXITCODE -ne 0) { Say 'engine patch skipped (layout changed?)' }
+}
+
 Say 'localizing...'
 $p = Start-Process -FilePath $python -ArgumentList @($tool, 'apply', '--yes') -NoNewWindow -Wait -PassThru -RedirectStandardOutput $outF -RedirectStandardError $errF
 if ($p -and $p.ExitCode -eq 0) {
