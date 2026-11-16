@@ -1,6 +1,6 @@
 {
-  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-16 更新：补 Antigravity 2.32.1 新增界面文案（SSH/远程、会话导航、评论草稿、设置项）与上游 v1.14 的三条。",
-  "version": "1.4.0",
+  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-16 更新：补 Antigravity 2.32.1 的漏译——just now / Thinking for Xs / 侧边提问模板与计数 / 右键菜单与设置项文案。",
+  "version": "1.5.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -196,14 +196,39 @@
     "2. Screen Recording": "2. 屏幕录制",
     "Cog Workspace": "Cog 工作区",
     "Pin Tab": "置顶标签页",
-    "Unpin Tab": "取消置顶标签页"
+    "Unpin Tab": "取消置顶标签页",
+    "Thought Process": "思考过程",
+    "Delete Side Question": "删除侧边提问",
+    "Resize side question panel": "调整侧边提问面板大小",
+    "View or edit comment": "查看或编辑评论",
+    "Address bar": "地址栏",
+    "Current Page": "当前页面",
+    "Dismiss Tip": "关闭提示",
+    "Dismiss notification": "关闭通知",
+    "Reload app": "重新加载应用",
+    "Reset all shortcuts to defaults": "将所有快捷键重置为默认值",
+    "Scroll position": "滚动位置",
+    "Signed-in accounts": "已登录的账号",
+    "Hidden hosts": "隐藏的主机",
+    "Workflow refs": "工作流引用",
+    "Workspace URI to switch to": "要切换到的工作区 URI",
+    "Plugin metadata": "插件元数据",
+    "Available licenses": "可用许可证",
+    "Custom flag to turn on": "要启用的自定义标志",
+    "Available CEL field tokens and helpers": "可用的 CEL 字段标记与辅助函数",
+    "drawing line preview": "绘制直线预览",
+    "drawing rectangle preview": "绘制矩形预览",
+    "Conversation Telemetry": "对话遥测",
+    "Open in External Browser": "在外部浏览器中打开",
+    "Pause this agent; it keeps its place and streams. Resume to continue.": "暂停此智能体；它会保留当前位置并继续输出。恢复即可继续。"
   },
   "prefix": {
     "Select project, current: ": "选择项目，当前：",
     "Branch, current: ": "分支，当前：",
     "Select model, current: ": "选择模型，当前：",
     "Agent permissions preset selector, current: ": "智能体权限预设选择器，当前：",
-    "Select workspace, current: ": "选择工作区，当前："
+    "Select workspace, current: ": "选择工作区，当前：",
+    "Side Question: ": "侧边提问："
   },
   "regex": [
     { "pattern": "^Explored files, ran commands, edited files$", "replacement": "浏览了文件、运行了命令、编辑了文件" },
@@ -241,6 +266,16 @@
     { "pattern": "^(\\d+)\\s*s ago$", "replacement": "$1 秒前" },
     { "pattern": "·\\s*Exited with code (\\d+)", "replacement": "· 退出码 $1" },
     { "pattern": "^(.+?)\\s*\\(xhigh\\)$", "replacement": "$1 (超高)" },
-    { "pattern": "^(.+?)\\s*\\(max\\)$", "replacement": "$1 (最大)" }
+    { "pattern": "^(.+?)\\s*\\(max\\)$", "replacement": "$1 (最大)" },
+    { "pattern": "^Thinking for (\\d+)s$", "replacement": "思考了 $1 秒" },
+    { "pattern": "^Thought for (\\d+)s$", "replacement": "思考了 $1 秒" },
+    { "pattern": "^(\\d+)\\s*mo ago$", "replacement": "$1 个月前" },
+    { "pattern": "^(\\d+)\\s*y ago$", "replacement": "$1 年前" },
+    { "pattern": "^(\\d+) Help$", "replacement": "$1 个帮助" },
+    { "pattern": "^(\\d+) Side Questions?$", "replacement": "$1 个侧边提问" },
+    { "pattern": "^View (\\d+) help(?: items)?$", "replacement": "查看 $1 个帮助" },
+    { "pattern": "^View (\\d+) side questions?$", "replacement": "查看 $1 个侧边提问" },
+    { "pattern": "^View (\\d+) help items and (\\d+) side questions?$", "replacement": "查看 $1 个帮助项和 $2 个侧边提问" },
+    { "pattern": "^Resume (\\d+) comment drafts?$", "replacement": "恢复 $1 条评论草稿" }
   ]
 }

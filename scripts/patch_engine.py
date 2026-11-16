@@ -30,6 +30,7 @@ import sys
 
 MARKER_CONTENT = 'USER-CONTENT-GUARD'
 MARKER_TIME = 'USER-REL-TIME'
+MARKER_TIMER = 'USER-THINK-TIMER'
 
 # ---- rule 1: user-named content must not be translated -----------------------
 R1_ANCHOR = "        if (element.hasAttribute && element.hasAttribute('data-ag-localization-skip')) return true;"
@@ -64,9 +65,12 @@ R2_BLOCK = """
                 var umt = cur.getAttribute('data-testid');
                 if (umt === 'user-message-bubble' || umt === 'user-message-content') return true;""" % MARKER_TIME
 R2_HELPER_ANCHOR = "    function judgeElement(element) {"
-R2_HELPER = """    // 相对时间戳（"2h ago" / "36m ago" / "3d ago"）——用户消息气泡旁也有，
+R2_HELPER = """    // 相对时间戳（"2h ago" / "36m ago" / "3d ago" / "just now"）——用户消息气泡旁也有，
     // 需要单独识别出来放行翻译，否则同屏一半中文一半英文。
-    var REL_TIME_RE = /^\\d+\\s*(s|m|h|d|w)\\s*ago$/i;
+    // 单位必须覆盖全部：s 秒 / m 分 / h 时 / d 天 / w 周 / mo 月 / y 年。
+    // "just now" 没有数字也没有单位，也要单独匹配（词典里有 "just now" -> "刚刚"，
+    // 但不认它的话这条就永远翻不到）。
+    var REL_TIME_RE = /^(?:\\d+\\s*(?:s|m|h|d|w|mo|y)\\s*ago|just now)$/i;
     function isRelTime(el) {
         if (!el) return false;
         var t = String(el.textContent || '').trim();
@@ -92,7 +96,34 @@ R2_HELPER = """    // 相对时间戳（"2h ago" / "36m ago" / "3d ago"）——
 
 """
 
+# ---- rule 3: thinking-duration text inside the thought container ----------
+# "Thought for 3s" / "Thinking for 1s" are rendered inside the cursor-edit
+# (thought) container, which the engine skips wholesale to protect reasoning
+# text. But the duration label is UI chrome, not user content -> let it through.
+R3_ANCHOR = "            if (cur.classList) {"
+R3_BLOCK = """
+                // %s: 思考时长（"Thought for 3s"）渲染在 cursor-edit（思考容器）里，
+                // 但它是界面文案不是用户内容 → 放行，否则信息流里的思考时长一直是英文。
+                if (isThinkTimer(element)) return false;""" % MARKER_TIMER
+R3_HELPER_ANCHOR = "    function judgeElement(element) {"
+R3_HELPER = """    // 思考时长标签（"Thought for 3s" / "Thinking for 1s"）
+    var THINK_TIMER_RE = /^(?:Thought|Thinking) for \\d+(?:\\.\\d+)?s$/i;
+    function isThinkTimer(el) {
+        if (!el) return false;
+        return THINK_TIMER_RE.test(String(el.textContent || '').trim());
+    }
+
+"""
+
 RULES = [
+    # (marker, mode, [(anchor, block), ...], helper anchor, helper text)
+    #   mode 'append'  -> the anchor line stays and the block is inserted after it
+    #   mode 'replace' -> the anchor line is REPLACED by the block
+    # Rule 2 must be 'replace': the original line is
+    #     if (cur.getAttribute('data-testid') === 'user-input-step') return true;
+    # which returns BEFORE any appended exception could run - appending would
+    # leave the rule as dead code (the bubble stays skipped and the timestamp
+    # never gets translated).
     # (marker, mode, [(anchor, block), ...], helper anchor, helper text)
     #   mode 'append'  -> the anchor line stays and the block is inserted after it
     #   mode 'replace' -> the anchor line is REPLACED by the block
@@ -103,6 +134,7 @@ RULES = [
     # never gets translated).
     (MARKER_CONTENT, 'append', [(R1_ANCHOR, R1_BLOCK_0), (R1_ANCHOR_ANC, R1_BLOCK_ANC)], None, None),
     (MARKER_TIME, 'replace', [(R2_ANCHOR, R2_BLOCK)], R2_HELPER_ANCHOR, R2_HELPER),
+    (MARKER_TIMER, 'append', [(R3_ANCHOR, R3_BLOCK)], R3_HELPER_ANCHOR, R3_HELPER),
 ]
 
 
