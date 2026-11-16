@@ -56,7 +56,13 @@ R2_BLOCK = """
                 // %s: 用户消息气泡里的「相对时间戳」不是用户输入，要照译。
                 // 气泡整体仍然跳过（用户自己打的字绝不翻），只放行 "2h ago" 这类时间。
                 // 否则 agent 那边的时间是中文、用户消息这边是英文，同屏不一致。
-                if (cur.getAttribute('data-testid') === 'user-input-step' && !isRelTime(element)) return true;""" % MARKER_TIME
+                // hasRelTime() 看整棵子树：DOM 遍历会先到达气泡**容器**，
+                // 此时 element 是容器本身（textContent 是整条消息），
+                // 只看元素自身的话整个气泡子树会被一起跳过，时间戳永远轮不到。
+                if (cur.getAttribute('data-testid') === 'user-input-step' && !hasRelTime(element)) return true;
+                // 双保险：真正装用户文字的容器一律跳过（即使上面的结构变了）。
+                var umt = cur.getAttribute('data-testid');
+                if (umt === 'user-message-bubble' || umt === 'user-message-content') return true;""" % MARKER_TIME
 R2_HELPER_ANCHOR = "    function judgeElement(element) {"
 R2_HELPER = """    // 相对时间戳（"2h ago" / "36m ago" / "3d ago"）——用户消息气泡旁也有，
     // 需要单独识别出来放行翻译，否则同屏一半中文一半英文。
@@ -66,13 +72,37 @@ R2_HELPER = """    // 相对时间戳（"2h ago" / "36m ago" / "3d ago"）——
         var t = String(el.textContent || '').trim();
         return REL_TIME_RE.test(t);
     }
+    // 容器里是否含相对时间戳（用于气泡整体放行）。
+    // IMPORTANT: the check must look at the whole subtree, not just the element
+    // itself: the walker reaches the message bubble CONTAINER before the
+    // timestamp inside it, and there `element` is the container whose
+    // textContent is the entire message - a self-only check makes the engine
+    // skip the whole bubble and the timestamp never gets translated.
+    function hasRelTime(el) {
+        if (!el) return false;
+        if (isRelTime(el)) return true;
+        if (el.querySelectorAll) {
+            var ns = el.querySelectorAll('span, div, time');
+            for (var i = 0; i < ns.length; i++) {
+                if (isRelTime(ns[i])) return true;
+            }
+        }
+        return false;
+    }
 
 """
 
 RULES = [
-    # (marker, [(anchor, block), ...], helper anchor, helper text)
-    (MARKER_CONTENT, [(R1_ANCHOR, R1_BLOCK_0), (R1_ANCHOR_ANC, R1_BLOCK_ANC)], None, None),
-    (MARKER_TIME, [(R2_ANCHOR, R2_BLOCK)], R2_HELPER_ANCHOR, R2_HELPER),
+    # (marker, mode, [(anchor, block), ...], helper anchor, helper text)
+    #   mode 'append'  -> the anchor line stays and the block is inserted after it
+    #   mode 'replace' -> the anchor line is REPLACED by the block
+    # Rule 2 must be 'replace': the original line is
+    #     if (cur.getAttribute('data-testid') === 'user-input-step') return true;
+    # which returns BEFORE any appended exception could run - appending would
+    # leave the rule as dead code (the bubble stays skipped and the timestamp
+    # never gets translated).
+    (MARKER_CONTENT, 'append', [(R1_ANCHOR, R1_BLOCK_0), (R1_ANCHOR_ANC, R1_BLOCK_ANC)], None, None),
+    (MARKER_TIME, 'replace', [(R2_ANCHOR, R2_BLOCK)], R2_HELPER_ANCHOR, R2_HELPER),
 ]
 
 
@@ -90,7 +120,7 @@ def main() -> int:
         src = f.read()
 
     changed = False
-    for marker, pairs, helper_anchor, helper_text in RULES:
+    for marker, mode, pairs, helper_anchor, helper_text in RULES:
         if marker in src:
             print('skip (already patched): %s' % marker)
             continue
@@ -109,9 +139,12 @@ def main() -> int:
                 return 1
             src = src.replace(helper_anchor, helper_text + helper_anchor, 1)
         for anchor, block in pairs:
-            src = src.replace(anchor, anchor + block, 1)
+            if mode == 'replace':
+                src = src.replace(anchor, block, 1)
+            else:
+                src = src.replace(anchor, anchor + block, 1)
         changed = True
-        print('patched: %s' % marker)
+        print('patched: %s (%s)' % (marker, mode))
 
     if not changed:
         print('nothing to do')
