@@ -1,6 +1,6 @@
 {
-  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-16 更新：补 Antigravity 2.32.1 的漏译——just now / Thinking for Xs / 侧边提问模板与计数 / 右键菜单与设置项文案。",
-  "version": "1.5.0",
+  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-17 更新：补右键菜单全集（对话/链接/内置浏览器/反馈/分组/设置导航）、侧边提问模板计数、思考时长、相对时间 mo/y/just now。模型输出正文容器 agent-response 由引擎补丁跳过（不翻译正文）。",
+  "version": "1.6.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -220,7 +220,11 @@
     "drawing rectangle preview": "绘制矩形预览",
     "Conversation Telemetry": "对话遥测",
     "Open in External Browser": "在外部浏览器中打开",
-    "Pause this agent; it keeps its place and streams. Resume to continue.": "暂停此智能体；它会保留当前位置并继续输出。恢复即可继续。"
+    "Pause this agent; it keeps its place and streams. Resume to continue.": "暂停此智能体；它会保留当前位置并继续输出。恢复即可继续。",
+    "This Computer": "此电脑",
+    "Undo to Here": "撤销到此点",
+    "Good Response": "好评",
+    "Bad Response": "差评"
   },
   "prefix": {
     "Select project, current: ": "选择项目，当前：",
@@ -276,6 +280,7 @@
     { "pattern": "^View (\\d+) help(?: items)?$", "replacement": "查看 $1 个帮助" },
     { "pattern": "^View (\\d+) side questions?$", "replacement": "查看 $1 个侧边提问" },
     { "pattern": "^View (\\d+) help items and (\\d+) side questions?$", "replacement": "查看 $1 个帮助项和 $2 个侧边提问" },
-    { "pattern": "^Resume (\\d+) comment drafts?$", "replacement": "恢复 $1 条评论草稿" }
+    { "pattern": "^Resume (\\d+) comment drafts?$", "replacement": "恢复 $1 条评论草稿" },
+    { "pattern": "^View (\\d+) help(?: items)? and (\\d+) side questions?$", "replacement": "查看 $1 个帮助项和 $2 个侧边提问" }
   ]
 }

@@ -38,16 +38,18 @@ R1_ANCHOR_ANC = "                if (cur.getAttribute('data-ag-localization-skip
 # NOTE: every comparison must be against the variable as well
 # ('x' || 'y' is a non-empty string -> always true -> every element with a
 #  data-testid would be skipped, i.e. most of the UI would stop translating).
-R1_TESTIDS = "%(v)s === 'breadcrumb-segment' || %(v)s === 'conversation-row-sidebar' || %(v)s === 'project-header'"
+R1_TESTIDS = ("%(v)s === 'breadcrumb-segment' || %(v)s === 'conversation-row-sidebar' || "
+              "%(v)s === 'project-header' || %(v)s === 'agent-response'")
 R1_BLOCK_0 = """
-        // %s: 用户自己命名的内容绝不翻译（会话名 / 项目名）。
-        // 名为 "debug" 的会话被翻成"调试"、项目名被翻掉，都会让人以为名字被改了。
+        // %s: 用户自己命名的内容 + 模型输出正文绝不翻译。
+        // 会话名/项目名被翻会让人以为名字被改了；agent-response 是模型回复容器，
+        // 里面的正文翻译会篡改模型输出（用户明确要求正文保持原样）。
         if (element.getAttribute) {
             var ug = element.getAttribute('data-testid');
             if (%s) return true;
         }""" % (MARKER_CONTENT, R1_TESTIDS % {'v': 'ug'})
 R1_BLOCK_ANC = """
-                // %s: 祖先链上的用户命名容器（会话行 / 项目标题 / 面包屑段）
+                // %s: 祖先链上的用户命名容器 + 模型回复容器（会话行 / 项目标题 / 面包屑段 / agent-response）
                 var ug2 = cur.getAttribute('data-testid');
                 if (%s) return true;""" % (MARKER_CONTENT, R1_TESTIDS % {'v': 'ug2'})
 
