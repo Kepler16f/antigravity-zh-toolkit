@@ -155,6 +155,36 @@ def patch_budget(root: Path) -> str:
     return ("raised: " + ", ".join(touched)) if touched else "already raised / no match"
 
 
+def patch_staging_path(root: Path) -> str:
+    """Keep the SQLite staging file name short.
+
+    Upstream builds the staging path as `<ledger.json>.<uuid>.tmp`. The usage
+    ledger path is already ~218 characters on a normal profile, and SQLite
+    creates a "-journal" sidecar (8 more characters) next to it. That pushed
+    the path past the Windows MAX_PATH limit, and the disk worker died with
+    "unable to open database file" - the collection then ended in state
+    "limited" / code "budget-exceeded". Same directory, short name.
+    """
+    path = root / "sidecars" / "panel" / "usage.mjs"
+    if not path.is_file():
+        return "usage.mjs not found"
+    src = path.read_text(encoding="utf-8")
+    if "PULSE_STAGING_PATH_V1" in src:
+        return "already patched"
+    old = "const staging=file+'.'+randomUUID()+'.tmp';"
+    if old not in src:
+        return "anchor not found"
+    new = ("// PULSE_STAGING_PATH_V1: keep the staging name short - SQLite adds a\n"
+           "      // \"-journal\" sidecar (8 more chars) and the ledger path is already ~218\n"
+           "      // chars here, which pushed it past the Windows MAX_PATH limit.\n"
+           "      const staging=join(dirname(file),'s'+randomUUID().replace(/-/g,'')+'.tmp');")
+    src = src.replace(old, new, 1)
+    if "import {join} from 'node:path';" in src:
+        src = src.replace("import {join} from 'node:path';", "import {join,dirname} from 'node:path';", 1)
+    path.write_text(src, encoding="utf-8")
+    return "patched"
+
+
 def main() -> int:
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.home() / ".gemini" / "config" / "plugins" / "antigravity-pulse"
     usage = root / "sidecars" / "panel" / "usage.mjs"
@@ -165,6 +195,7 @@ def main() -> int:
     print("usage.mjs: " + patch_usage(root))
     print("usage-disk-worker.mjs: " + patch_worker(root))
     print("budget: " + patch_budget(root))
+    print("staging path: " + patch_staging_path(root))
     text = usage.read_text(encoding="utf-8")
     worker = (root / "sidecars" / "panel" / "usage-disk-worker.mjs").read_text(encoding="utf-8")
     helper = (root / "sidecars" / "panel" / MODULE).read_text(encoding="utf-8")
