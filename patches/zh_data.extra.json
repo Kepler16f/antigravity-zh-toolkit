@@ -1,6 +1,6 @@
 {
-  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-17 更新：补右键菜单全集（对话/链接/内置浏览器/反馈/分组/设置导航）、侧边提问模板计数、思考时长、相对时间 mo/y/just now。模型输出正文容器 agent-response 由引擎补丁跳过（不翻译正文）。",
-  "version": "1.6.0",
+  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-24 更新：档位 Extra 改名 Extra High（服务端下发）；补漏译的右键菜单（Clear Recent Documents / Recent Documents / Enter-Exit Full Screen / Start-Stop Speaking）与 SSH 连接失败提示、演示模式设置说明。",
+  "version": "1.7.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -224,7 +224,18 @@
     "This Computer": "此电脑",
     "Undo to Here": "撤销到此点",
     "Good Response": "好评",
-    "Bad Response": "差评"
+    "Bad Response": "差评",
+    "Extra High": "超高",
+    "Extra High Thinking": "超高思考",
+    "(Extra High)": "(超高)",
+    "Clear Recent Documents": "清除最近打开的文档",
+    "Recent Documents": "最近打开的文档",
+    "Enter Full Screen": "进入全屏",
+    "Exit Full Screen": "退出全屏",
+    "Start Speaking": "开始说话",
+    "Stop Speaking": "停止说话",
+    "Couldn't connect to the SSH host. See the app log.": "无法连接到 SSH 主机。请查看应用日志。",
+    "Antigravity: Start Demo Mode\" and \"Antigravity: Stop Demo Mode\" to control this switch and update your ~/.gemini/antigravity data directory.": "使用“Antigravity: 启动演示模式”和“Antigravity: 停止演示模式”命令控制此开关，并更新你的 ~/.gemini/antigravity 数据目录。"
   },
   "prefix": {
     "Select project, current: ": "选择项目，当前：",
@@ -235,52 +246,193 @@
     "Side Question: ": "侧边提问："
   },
   "regex": [
-    { "pattern": "^Explored files, ran commands, edited files$", "replacement": "浏览了文件、运行了命令、编辑了文件" },
-    { "pattern": "^Explored (\\d+) files?$", "replacement": "浏览了 $1 个文件" },
-    { "pattern": "^[Rr]an (\\d+) commands?$", "replacement": "运行了 $1 条命令" },
-    { "pattern": "^Edited (\\d+) files?$", "replacement": "编辑了 $1 个文件" },
-    { "pattern": "^Viewed (\\d+) files?$", "replacement": "查看了 $1 个文件" },
-    { "pattern": "^Run (.+) again finished$", "replacement": "再次运行 $1 完成" },
-    { "pattern": "^Run (.+) finished$", "replacement": "运行 $1 完成" },
-    { "pattern": "^Watch (.+) workflow finished$", "replacement": "监听 $1 工作流完成" },
-    { "pattern": "^Running (.+) workflow$", "replacement": "正在运行 $1 工作流" },
-    { "pattern": "^List (.+) files finished$", "replacement": "列出 $1 文件完成" },
-    { "pattern": "^Download (.+) finished$", "replacement": "下载 $1 完成" },
-    { "pattern": "^Commit, push, check CI finished$", "replacement": "提交、推送、检查 CI 完成" },
-    { "pattern": "^Explored (.+)$", "replacement": "浏览了 $1" },
-    { "pattern": "^[Rr]an (.+)$", "replacement": "运行了 $1" },
-    { "pattern": "^Edited (.+)$", "replacement": "编辑了 $1" },
-    { "pattern": "^Viewed (.+)$", "replacement": "查看了 $1" },
-    { "pattern": "^Working on (.+)$", "replacement": "正在处理 $1" },
-    { "pattern": "^Thinking about (.+)$", "replacement": "正在思考 $1" },
-    { "pattern": "^Remove shortcut (.+?) for (.+)$", "replacement": "移除快捷键 $1（用于 $2）" },
-    { "pattern": "^Add shortcut for (.+)$", "replacement": "为 $1 添加快捷键" },
-    { "pattern": "^Shortcut (.+?) for (.+)$", "replacement": "快捷键 $1（用于 $2）" },
-    { "pattern": "^More actions for (.+)$", "replacement": "$1 的更多操作" },
-    { "pattern": "^Details for (.+)$", "replacement": "$1 的详细信息" },
-    { "pattern": "^Add (.+)$", "replacement": "添加 $1" },
-    { "pattern": "^Install (.+)$", "replacement": "安装 $1" },
-    { "pattern": "^Remove (.+)$", "replacement": "移除 $1" },
-    { "pattern": "^Configure (.+)$", "replacement": "配置 $1" },
-    { "pattern": "^Search (.+)$", "replacement": "搜索 $1" },
-    { "pattern": "^(\\d+)\\s*h ago$", "replacement": "$1 小时前" },
-    { "pattern": "^(\\d+)\\s*m ago$", "replacement": "$1 分钟前" },
-    { "pattern": "^(\\d+)\\s*d ago$", "replacement": "$1 天前" },
-    { "pattern": "^(\\d+)\\s*w ago$", "replacement": "$1 周前" },
-    { "pattern": "^(\\d+)\\s*s ago$", "replacement": "$1 秒前" },
-    { "pattern": "·\\s*Exited with code (\\d+)", "replacement": "· 退出码 $1" },
-    { "pattern": "^(.+?)\\s*\\(xhigh\\)$", "replacement": "$1 (超高)" },
-    { "pattern": "^(.+?)\\s*\\(max\\)$", "replacement": "$1 (最大)" },
-    { "pattern": "^Thinking for (\\d+)s$", "replacement": "思考了 $1 秒" },
-    { "pattern": "^Thought for (\\d+)s$", "replacement": "思考了 $1 秒" },
-    { "pattern": "^(\\d+)\\s*mo ago$", "replacement": "$1 个月前" },
-    { "pattern": "^(\\d+)\\s*y ago$", "replacement": "$1 年前" },
-    { "pattern": "^(\\d+) Help$", "replacement": "$1 个帮助" },
-    { "pattern": "^(\\d+) Side Questions?$", "replacement": "$1 个侧边提问" },
-    { "pattern": "^View (\\d+) help(?: items)?$", "replacement": "查看 $1 个帮助" },
-    { "pattern": "^View (\\d+) side questions?$", "replacement": "查看 $1 个侧边提问" },
-    { "pattern": "^View (\\d+) help items and (\\d+) side questions?$", "replacement": "查看 $1 个帮助项和 $2 个侧边提问" },
-    { "pattern": "^Resume (\\d+) comment drafts?$", "replacement": "恢复 $1 条评论草稿" },
-    { "pattern": "^View (\\d+) help(?: items)? and (\\d+) side questions?$", "replacement": "查看 $1 个帮助项和 $2 个侧边提问" }
+    {
+      "pattern": "^Explored files, ran commands, edited files$",
+      "replacement": "浏览了文件、运行了命令、编辑了文件"
+    },
+    {
+      "pattern": "^Explored (\\d+) files?$",
+      "replacement": "浏览了 $1 个文件"
+    },
+    {
+      "pattern": "^[Rr]an (\\d+) commands?$",
+      "replacement": "运行了 $1 条命令"
+    },
+    {
+      "pattern": "^Edited (\\d+) files?$",
+      "replacement": "编辑了 $1 个文件"
+    },
+    {
+      "pattern": "^Viewed (\\d+) files?$",
+      "replacement": "查看了 $1 个文件"
+    },
+    {
+      "pattern": "^Run (.+) again finished$",
+      "replacement": "再次运行 $1 完成"
+    },
+    {
+      "pattern": "^Run (.+) finished$",
+      "replacement": "运行 $1 完成"
+    },
+    {
+      "pattern": "^Watch (.+) workflow finished$",
+      "replacement": "监听 $1 工作流完成"
+    },
+    {
+      "pattern": "^Running (.+) workflow$",
+      "replacement": "正在运行 $1 工作流"
+    },
+    {
+      "pattern": "^List (.+) files finished$",
+      "replacement": "列出 $1 文件完成"
+    },
+    {
+      "pattern": "^Download (.+) finished$",
+      "replacement": "下载 $1 完成"
+    },
+    {
+      "pattern": "^Commit, push, check CI finished$",
+      "replacement": "提交、推送、检查 CI 完成"
+    },
+    {
+      "pattern": "^Explored (.+)$",
+      "replacement": "浏览了 $1"
+    },
+    {
+      "pattern": "^[Rr]an (.+)$",
+      "replacement": "运行了 $1"
+    },
+    {
+      "pattern": "^Edited (.+)$",
+      "replacement": "编辑了 $1"
+    },
+    {
+      "pattern": "^Viewed (.+)$",
+      "replacement": "查看了 $1"
+    },
+    {
+      "pattern": "^Working on (.+)$",
+      "replacement": "正在处理 $1"
+    },
+    {
+      "pattern": "^Thinking about (.+)$",
+      "replacement": "正在思考 $1"
+    },
+    {
+      "pattern": "^Remove shortcut (.+?) for (.+)$",
+      "replacement": "移除快捷键 $1（用于 $2）"
+    },
+    {
+      "pattern": "^Add shortcut for (.+)$",
+      "replacement": "为 $1 添加快捷键"
+    },
+    {
+      "pattern": "^Shortcut (.+?) for (.+)$",
+      "replacement": "快捷键 $1（用于 $2）"
+    },
+    {
+      "pattern": "^More actions for (.+)$",
+      "replacement": "$1 的更多操作"
+    },
+    {
+      "pattern": "^Details for (.+)$",
+      "replacement": "$1 的详细信息"
+    },
+    {
+      "pattern": "^Add (.+)$",
+      "replacement": "添加 $1"
+    },
+    {
+      "pattern": "^Install (.+)$",
+      "replacement": "安装 $1"
+    },
+    {
+      "pattern": "^Remove (.+)$",
+      "replacement": "移除 $1"
+    },
+    {
+      "pattern": "^Configure (.+)$",
+      "replacement": "配置 $1"
+    },
+    {
+      "pattern": "^Search (.+)$",
+      "replacement": "搜索 $1"
+    },
+    {
+      "pattern": "^(\\d+)\\s*h ago$",
+      "replacement": "$1 小时前"
+    },
+    {
+      "pattern": "^(\\d+)\\s*m ago$",
+      "replacement": "$1 分钟前"
+    },
+    {
+      "pattern": "^(\\d+)\\s*d ago$",
+      "replacement": "$1 天前"
+    },
+    {
+      "pattern": "^(\\d+)\\s*w ago$",
+      "replacement": "$1 周前"
+    },
+    {
+      "pattern": "^(\\d+)\\s*s ago$",
+      "replacement": "$1 秒前"
+    },
+    {
+      "pattern": "·\\s*Exited with code (\\d+)",
+      "replacement": "· 退出码 $1"
+    },
+    {
+      "pattern": "^(.+?)\\s*\\(xhigh\\)$",
+      "replacement": "$1 (超高)"
+    },
+    {
+      "pattern": "^(.+?)\\s*\\(max\\)$",
+      "replacement": "$1 (最大)"
+    },
+    {
+      "pattern": "^Thinking for (\\d+)s$",
+      "replacement": "思考了 $1 秒"
+    },
+    {
+      "pattern": "^Thought for (\\d+)s$",
+      "replacement": "思考了 $1 秒"
+    },
+    {
+      "pattern": "^(\\d+)\\s*mo ago$",
+      "replacement": "$1 个月前"
+    },
+    {
+      "pattern": "^(\\d+)\\s*y ago$",
+      "replacement": "$1 年前"
+    },
+    {
+      "pattern": "^(\\d+) Help$",
+      "replacement": "$1 个帮助"
+    },
+    {
+      "pattern": "^(\\d+) Side Questions?$",
+      "replacement": "$1 个侧边提问"
+    },
+    {
+      "pattern": "^View (\\d+) help(?: items)?$",
+      "replacement": "查看 $1 个帮助"
+    },
+    {
+      "pattern": "^View (\\d+) side questions?$",
+      "replacement": "查看 $1 个侧边提问"
+    },
+    {
+      "pattern": "^View (\\d+) help items and (\\d+) side questions?$",
+      "replacement": "查看 $1 个帮助项和 $2 个侧边提问"
+    },
+    {
+      "pattern": "^Resume (\\d+) comment drafts?$",
+      "replacement": "恢复 $1 条评论草稿"
+    },
+    {
+      "pattern": "^View (\\d+) help(?: items)? and (\\d+) side questions?$",
+      "replacement": "查看 $1 个帮助项和 $2 个侧边提问"
+    }
   ]
 }
