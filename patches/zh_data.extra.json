@@ -1,6 +1,6 @@
 {
-  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-24 更新：档位 Extra 改名 Extra High（服务端下发）；补漏译的右键菜单（Clear Recent Documents / Recent Documents / Enter-Exit Full Screen / Start-Stop Speaking）与 SSH 连接失败提示、演示模式设置说明。",
-  "version": "1.7.0",
+  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-24 更新：档位 Extra 改名 Extra High（服务端下发）；补漏译的右键菜单（Clear Recent Documents / Recent Documents / Enter-Exit Full Screen / Start-Stop Speaking）与 SSH 连接失败提示、演示模式设置说明；补服务端模型下线提示 'Leaving soon'；补档位与模型名拼接显示的尾部正则（如 'Gemini 4 Neon Extra High' -> 'Gemini 4 Neon 超高'）。",
+  "version": "1.8.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -235,7 +235,10 @@
     "Start Speaking": "开始说话",
     "Stop Speaking": "停止说话",
     "Couldn't connect to the SSH host. See the app log.": "无法连接到 SSH 主机。请查看应用日志。",
-    "Antigravity: Start Demo Mode\" and \"Antigravity: Stop Demo Mode\" to control this switch and update your ~/.gemini/antigravity data directory.": "使用“Antigravity: 启动演示模式”和“Antigravity: 停止演示模式”命令控制此开关，并更新你的 ~/.gemini/antigravity 数据目录。"
+    "Antigravity: Start Demo Mode\" and \"Antigravity: Stop Demo Mode\" to control this switch and update your ~/.gemini/antigravity data directory.": "使用“Antigravity: 启动演示模式”和“Antigravity: 停止演示模式”命令控制此开关，并更新你的 ~/.gemini/antigravity 数据目录。",
+    "Leaving soon": "即将下线",
+    "Leaving soon.": "即将下线。",
+    "is leaving soon": "即将下线"
   },
   "prefix": {
     "Select project, current: ": "选择项目，当前：",
@@ -433,6 +436,42 @@
     {
       "pattern": "^View (\\d+) help(?: items)? and (\\d+) side questions?$",
       "replacement": "查看 $1 个帮助项和 $2 个侧边提问"
+    },
+    {
+      "pattern": "^(.+?)\\s+Extra High$",
+      "replacement": "$1 超高"
+    },
+    {
+      "pattern": "^(.+?)\\s+Extra Thinking$",
+      "replacement": "$1 超高思考"
+    },
+    {
+      "pattern": "^(.+?)\\s+Extra$",
+      "replacement": "$1 超高"
+    },
+    {
+      "pattern": "^(.+?)\\s+\\(High\\)$",
+      "replacement": "$1 (高)"
+    },
+    {
+      "pattern": "^(.+?)\\s+\\(Medium\\)$",
+      "replacement": "$1 (中)"
+    },
+    {
+      "pattern": "^(.+?)\\s+\\(Low\\)$",
+      "replacement": "$1 (低)"
+    },
+    {
+      "pattern": "^(.+?)\\s+\\(Thinking\\)$",
+      "replacement": "$1 (思考)"
+    },
+    {
+      "pattern": "^(.+?)\\s+is leaving soon$",
+      "replacement": "$1 即将下线"
+    },
+    {
+      "pattern": "^(.+?)\\s+Leaving soon$",
+      "replacement": "$1 即将下线"
     }
   ]
 }
