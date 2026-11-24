@@ -50,13 +50,25 @@ def main() -> int:
             have.add(r.get('pattern'))
             added += 1
 
+    # aria-label whitelist consumed by the engine patch (ARIA_LABEL_SAFE_V1).
+    # Only the listed literals / patterns may be rewritten; every other
+    # aria-label keeps its raw value so host logic comparisons still work.
+    for field in ('ariaLabelSafe', 'ariaLabelSafePatterns'):
+        src = patch.get(field) or []
+        dst = data.setdefault(field, [])
+        for item in src:
+            if item not in dst:
+                dst.append(item)
+                added += 1
+
     data['version'] = str(data.get('version', '')).split('+local')[0] + '+local'
     with open(data_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
 
     print('added    : %d entries' % added)
-    print('total    : exact=%d prefix=%d regex=%d' % (
-        len(data.get('exact') or {}), len(data.get('prefix') or {}), len(data.get('regex') or [])))
+    print('total    : exact=%d prefix=%d regex=%d ariaSafe=%d' % (
+        len(data.get('exact') or {}), len(data.get('prefix') or {}), len(data.get('regex') or []),
+        len(data.get('ariaLabelSafe') or [])))
     return 0
 
 

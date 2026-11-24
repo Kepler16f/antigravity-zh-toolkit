@@ -1,6 +1,6 @@
 {
-  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-24 更新：档位 Extra 改名 Extra High（服务端下发）；补漏译的右键菜单（Clear Recent Documents / Recent Documents / Enter-Exit Full Screen / Start-Stop Speaking）与 SSH 连接失败提示、演示模式设置说明；补服务端模型下线提示 'Leaving soon'；补档位与模型名拼接显示的尾部正则（如 'Gemini 4 Neon Extra High' -> 'Gemini 4 Neon 超高'）。",
-  "version": "1.8.0",
+  "_comment": "增量词条：合并进上游汉化工具的 zh_data.json（exact/prefix/regex）。只包含本仓库新增的条目，上游词典不在此文件里。2026-11-24 更新：档位 Extra 改名 Extra High；补漏译的右键菜单与提示；补 'Leaving soon' 模型下线提示；补档位拼接的尾部正则；补 Antigravity 图标按钮的 aria-label 白名单（ariaLabelSafe + patch_engine_aria.py）；补服务端下发的模型说明（模型下拉里 ⓘ 的悬停提示）与斜杠命令说明。",
+  "version": "1.10.0",
   "exact": {
     "Explored files, ran commands, edited files": "浏览了文件、运行了命令、编辑了文件",
     "Explored files": "浏览了文件",
@@ -80,12 +80,12 @@
     "Sidebar": "侧边栏",
     "Pinned Actions": "置顶操作",
     "Archive conversation": "归档对话",
-    "Unpin conversation": "取消置顶对话",
+    "Unpin conversation": "取消置顶",
     "Pin conversation": "置顶对话",
     "More options": "更多选项",
     "More actions": "更多操作",
     "Display Options": "显示选项",
-    "Create New Project": "新建项目",
+    "Create New Project": "创建新项目",
     "Project options": "项目选项",
     "New Conversation in Project": "在项目中新建对话",
     "New Conversation": "新建对话",
@@ -135,7 +135,7 @@
     "Search shortcuts": "搜索快捷键",
     "Refresh quota and credits data": "刷新配额与额度数据",
     "Notifications": "通知",
-    "Typeahead menu": "自动补全菜单",
+    "Typeahead menu": "输入提示菜单",
     "Customizations views": "定制视图",
     "Featured": "精选",
     "Plugins in Featured": "精选中的插件",
@@ -238,7 +238,33 @@
     "Antigravity: Start Demo Mode\" and \"Antigravity: Stop Demo Mode\" to control this switch and update your ~/.gemini/antigravity data directory.": "使用“Antigravity: 启动演示模式”和“Antigravity: 停止演示模式”命令控制此开关，并更新你的 ~/.gemini/antigravity 数据目录。",
     "Leaving soon": "即将下线",
     "Leaving soon.": "即将下线。",
-    "is leaving soon": "即将下线"
+    "is leaving soon": "即将下线",
+    "New tab": "新建标签页",
+    "Toggle Chat": "切换聊天",
+    "Open Chat View": "打开聊天视图",
+    "Toggle Secondary Side Bar": "切换辅助侧边栏",
+    "Hide Secondary Side Bar": "隐藏辅助侧边栏",
+    "Offloads routine steps to a faster executor. Same quality, fewer tokens used.": "将常规步骤卸载给更快的执行器。质量相同，消耗的 token 更少。",
+    "For most deep reasoning and complex problems": "适用于大多数深度推理和复杂问题",
+    "For your hardest, long-horizon tasks": "适用于最困难的长周期任务",
+    "The original Gemini 4 model for advanced workflows. Leaving on Nov 30.": "面向高级工作流的初代 Gemini 4 模型。11 月 30 日下线。",
+    "For speed and efficiency in execution tasks": "适用于追求速度和执行效率的任务",
+    "Neon that may offload routine steps to Hydrogen. Same Neon-level quality, fewer tokens used.": "Neon，可将常规步骤卸载给 Hydrogen。质量与 Neon 相同，消耗的 token 更少。",
+    "Carbon that may offload routine steps to Hydrogen. Same Carbon-level quality, fewer tokens used.": "Carbon，可将常规步骤卸载给 Hydrogen。质量与 Carbon 相同，消耗的 token 更少。",
+    "Argon that may offload routine steps to Hydrogen. Same Argon-level quality, fewer tokens used.": "Argon，可将常规步骤卸载给 Hydrogen。质量与 Argon 相同，消耗的 token 更少。",
+    "Use Hydrogen for better quality with lower quota usage. Leaving on Nov 30.": "使用 Hydrogen 可获得更高质量，同时降低配额消耗。11 月 30 日下线。",
+    "GPT-OSS will be removed from Antigravity on November 30, 2026.": "GPT-OSS 将于 2026 年 11 月 30 日从 Antigravity 中移除。",
+    "Ask a quick question without interrupting the main conversation.": "快速提问，不打断主对话。",
+    "Run until the specified goal is completely finished.": "运行直到指定目标完全完成。",
+    "Compact the conversation now (summarize history to free up the context window).": "立即压缩对话（总结历史以释放上下文窗口）。",
+    "Run an instruction on a recurring schedule or as a one-time timer.": "按周期或作为一次性定时器运行指令。",
+    "Invoke a browser agent for web tasks.": "调用浏览器智能体处理网页任务。",
+    "Plan carefully before executing a task.": "执行任务前先仔细规划。",
+    "Interview me to align on a plan.": "通过访谈与我确认计划。",
+    "Invoke a team of agents to autonomously tackle large projects.": "调用一组智能体自主处理大型项目。",
+    "Reflect on recent successes or corrections to capture reusable skills or rules.": "回顾近期的成功或纠正，沉淀可复用的技能或规则。",
+    "Invoke the Boost multi-agent orchestrator for complex tasks.": "调用 Boost 多智能体编排器处理复杂任务。",
+    "Edits the conversation title": "编辑对话标题"
   },
   "prefix": {
     "Select project, current: ": "选择项目，当前：",
@@ -472,6 +498,59 @@
     {
       "pattern": "^(.+?)\\s+Leaving soon$",
       "replacement": "$1 即将下线"
+    },
+    {
+      "pattern": "^Select model, current: (.+)$",
+      "replacement": "选择模型，当前：$1"
+    },
+    {
+      "pattern": "^Select project, current: (.+)$",
+      "replacement": "选择项目，当前：$1"
+    },
+    {
+      "pattern": "^Agent permissions preset selector, current: (.+)$",
+      "replacement": "智能体权限预设选择器，当前：$1"
+    },
+    {
+      "pattern": "^Select conversation mode, current: (.+)$",
+      "replacement": "选择对话模式，当前：$1"
     }
+  ],
+  "ariaLabelSafe": [
+    "Add context",
+    "Announcements and tips",
+    "Archive conversation",
+    "Create New Project",
+    "Display Options",
+    "Go Back",
+    "Go Forward",
+    "Hide Secondary Side Bar",
+    "Message input",
+    "More actions",
+    "More options",
+    "New Conversation",
+    "New Conversation in Project",
+    "New tab",
+    "Notifications",
+    "Open Chat View",
+    "Pin conversation",
+    "Pinned Actions",
+    "Project options",
+    "Record voice memo",
+    "Search Conversations",
+    "Sidebar",
+    "Start Voice mode",
+    "Toggle Chat",
+    "Toggle Secondary Side Bar",
+    "Toggle Sidebar",
+    "Toggle Terminal",
+    "Typeahead menu",
+    "Unpin conversation"
+  ],
+  "ariaLabelSafePatterns": [
+    "^Select model, current: (.+)$",
+    "^Select project, current: (.+)$",
+    "^Agent permissions preset selector, current: (.+)$",
+    "^Select conversation mode, current: (.+)$"
   ]
 }
